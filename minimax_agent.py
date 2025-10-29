@@ -24,4 +24,30 @@ class MinimaxAgent(Agent):
               state.generate_successor(), and state.to_move
         """
         # TODO: Remove this line and implement the minimax algorithm
-        raise NotImplementedError("Minimax algorithm not implemented yet")
+        if state.is_terminal():
+            return state.utility(), None
+
+        player = state.to_move
+        best_action = None
+
+        if player == 'X':  # MAX player
+            best_value = float('-inf')
+            for action in state.get_legal_actions():
+                successor = state.generate_successor(action)
+                value, _ = self.minimax(successor)
+                if value > best_value:
+                    best_value = value
+                    best_action = action
+            return best_value, best_action
+
+        else:  # MIN player
+            best_value = float('inf')
+            for action in state.get_legal_actions():
+                successor = state.generate_successor(action)
+                value, _ = self.minimax(successor)
+                if value < best_value:
+                    best_value = value
+                    best_action = action
+            return best_value, best_action
+
+
