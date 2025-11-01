@@ -43,5 +43,29 @@ class ExpectimaxAgent(Agent):
             return betterEvaluationFunction(state), None
 
         # TODO: Implement the expectimax algorithm logic here
+        legal_actions = state.get_legal_actions()
+
+        player = state.to_move
+        #if max:
+        if player == 'X':
+            best_val=-float('inf')
+            best_action = None
+            for action in legal_actions:
+                successor = state.generate_successor(action)
+                value, _ = self.expectimax(successor, depth_limit, current_depth+1)
+                if value > best_val:
+                    best_val = value
+                    best_action = action
+            return best_val, best_action
+        #if chance
+        else:
+            total_value = 0
+            for action in legal_actions:
+                successor = state.generate_successor(action)
+                value, _ = self.expectimax(successor,depth_limit, current_depth+1)
+                total_value += value
+
+            expected_value = total_value / len(legal_actions) #avg
+            return expected_value, None
         # Remove this line and implement the algorithm
-        raise NotImplementedError("Expectimax algorithm not implemented yet")
+        # raise NotImplementedError("Expectimax algorithm not implemented yet")
