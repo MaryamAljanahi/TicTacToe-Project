@@ -37,4 +37,46 @@ class AlphaBetaAgent(Agent):
         Hint: Use betterEvaluationFunction(state) for non-terminal cutoff evaluation
         """
         # TODO: Remove this line and implement the alpha-beta algorithm
-        raise NotImplementedError("Alpha-beta pruning algorithm not implemented yet")
+ # Base case: terminal state
+        if state.is_terminal():
+            return state.utility(), None
+
+        # Depth limit reached — use heuristic evaluation
+        if depth_limit is not None and current_depth == depth_limit:
+            return betterEvaluationFunction(state), None
+
+        legal_actions = state.get_legal_actions()
+        best_action = None
+
+        # MAX player (X)
+        if state.player == 'X':
+            value = float('-inf')
+            for action in legal_actions:
+                successor = state.generate_successor(action)
+                child_value, _ = self.alphabeta(successor, alpha, beta, depth_limit, current_depth + 1)
+
+                if child_value > value:
+                    value = child_value
+                    best_action = action
+
+                alpha = max(alpha, value)
+                if alpha >= beta:  # prune
+                    break
+            return value, best_action
+
+        # MIN player (O)
+        else:
+            value = float('inf')
+            for action in legal_actions:
+                successor = state.generate_successor(action)
+                child_value, _ = self.alphabeta(successor, alpha, beta, depth_limit, current_depth + 1)
+
+                if child_value < value:
+                    value = child_value
+                    best_action = action
+
+                beta = min(beta, value)
+                if beta <= alpha:  # prune
+                    break
+            return value, best_action
+        
