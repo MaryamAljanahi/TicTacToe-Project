@@ -5,6 +5,8 @@ from minimax_agent import MinimaxAgent
 from alphabeta_agent import AlphaBetaAgent
 from expectimax_agent import ExpectimaxAgent
 from evaluation import betterEvaluationFunction
+from metrics import METRICS
+
 
 
 # ===============================================================
@@ -14,6 +16,7 @@ def play_game(agentX, agentO, depth_limit=None, verbose=True):
     """Runs a Tic-Tac-Toe game between two AI agents (X and O)."""
     state = GameState()
 
+    METRICS.reset() #reset for this game
     def display_board(s: GameState):
         board = [c if c is not None else " " for c in s.board]
         print(f"\n   {board[0]} | {board[1]} | {board[2]} ")
@@ -35,6 +38,7 @@ def play_game(agentX, agentO, depth_limit=None, verbose=True):
         print(f"Search Depth: {depth_limit if depth_limit else 'Full'}")
         print("\nInitial Board:")
         display_board(state)
+
 
     move_num = 1
     while not state.is_terminal():
@@ -65,6 +69,21 @@ def play_game(agentX, agentO, depth_limit=None, verbose=True):
         print(f"WINNER: {type(agentX).__name__ if winner == 'X' else type(agentO).__name__} ({winner})")
     print("\nFinal Board:")
     display_board(state)
+
+    # ✅ metrics summary
+    total_time = sum(METRICS.move_times)
+    exp_nodes = METRICS.node_counts.get("expectimax", 0)
+    mini_nodes = METRICS.node_counts.get("minimax", 0)
+    ab_nodes = METRICS.node_counts.get("alphabeta", 0)
+    prunes = METRICS.prune_counts.get("alphabeta", 0)
+
+    print("Metrics:")
+    print(f"  Total decision time (s): {total_time:.6f}")
+    print(f"  Nodes expanded - Expectimax: {exp_nodes}")
+    print(f"  Nodes expanded - Minimax:   {mini_nodes}")
+    print(f"  Nodes expanded - AlphaBeta: {ab_nodes}")
+    print(f"  AlphaBeta prunes:           {prunes}")
+    print("=" * 50)
     print("=" * 50)
 
 

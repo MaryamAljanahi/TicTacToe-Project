@@ -2,14 +2,21 @@
 from agent_base import Agent
 from game import GameState
 from evaluation import betterEvaluationFunction
+from metrics import METRICS, count_nodes
 
 class AlphaBetaAgent(Agent):
     def get_action(self, state: GameState, depth=None):
         """
         Returns the best move index (0-8) for Tic-Tac-Toe using Alpha-Beta pruning.
         """
+
+        #CHANGED FOR METRIC
+        end_timer = METRICS.time_block() #start timer
         value, action = self.alphabeta(state, alpha=float('-inf'), beta=float('inf'),
                                        depth_limit=depth, current_depth=0)
+        end_timer()  #end timer
+
+
         # Safety fallback (never return None)
         if action is None:
             legal = state.get_legal_actions()
@@ -17,6 +24,7 @@ class AlphaBetaAgent(Agent):
                 action = legal[0]
         return action
 
+    @count_nodes("alphabeta")
     def alphabeta(self, state: GameState, alpha, beta, depth_limit, current_depth):
         """
         Recursive alpha-beta search returning (value, best_action).
@@ -55,6 +63,7 @@ class AlphaBetaAgent(Agent):
                     max_value, best_action = value, action
                 alpha = max(alpha, max_value)
                 if alpha >= beta:
+                    METRICS.prune_counts["alphabeta"] += 1
                     break  # prune
             return max_value, best_action
 
@@ -68,5 +77,6 @@ class AlphaBetaAgent(Agent):
                     min_value, best_action = value, action
                 beta = min(beta, min_value)
                 if beta <= alpha:
+                    METRICS.prune_counts["alphabeta"] += 1
                     break  # prune
             return min_value, best_action

@@ -1,12 +1,20 @@
 # minimax_agent.py
 from agent_base import Agent
 from game import GameState
+from metrics import METRICS, count_nodes
+
 
 class MinimaxAgent(Agent):
     def get_action(self, state: GameState, depth=None):
+
+        #CHANGED FOR METRIC
+        end_timer = METRICS.time_block() #start timer
         _, action = self.minimax(state)
+        end_timer() #end timer
+
         return action
 
+    @count_nodes("minimax")
     def minimax(self, state, depth_limit=None):
         """
         Returns: (value, best_action)
